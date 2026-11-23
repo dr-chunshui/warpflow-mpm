@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Run artifacts (per-rank particle dumps + energy log)
+dump_p.*.LAMMPS
+*.log.csv

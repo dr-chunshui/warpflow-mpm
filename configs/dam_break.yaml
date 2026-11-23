@@ -1,0 +1,69 @@
+# Dam break (port of Karamelo examples/Dam-break/water-dam.mpm)
+# Units: Pa, m, s
+
+dimension: 2
+box: [[0.0, 0.0], [1.61, 0.8]]
+cellsize: 0.04025
+basis: cubic-spline
+precision: float64
+
+method:
+  type: ulmpm
+  transfer: flip
+  pic_flip: 0.99
+  scheme: musl
+
+materials:
+  - id: mat1
+    model: eos-strength
+    eos:
+      type: fluid
+      rho0: 1000.0
+      K: 360.0
+      gamma: 7.0
+    strength:
+      type: fluid
+      G: 0.001
+
+regions:
+  - id: water
+    type: box
+    center: [0.3, 0.3]
+    size: [0.3, 0.3]
+  - id: rBottom
+    type: box
+    center: [0.805, -999999.99496875]
+    size: [10.0, 1000000.00503125]
+  - id: rLeft
+    type: box
+    center: [-999999.99496875, 0.4]
+    size: [1000000.00503125, 10.0]
+
+solids:
+  - id: solid1
+    material: mat1
+    region: water
+    ppc: 2
+
+boundary_conditions:
+  - id: fBCLY
+    type: velocity_nodes
+    region: rBottom
+    vy: 0
+  - id: fBCLX
+    type: velocity_nodes
+    region: rLeft
+    vx: 0
+  - id: fbody
+    type: body_force
+    g: [0, -9.81]
+
+output:
+  interval: 1
+  particle_dump: dump_p.*.LAMMPS
+  fields: [x, y, vx, vy]
+  log: [kinetic_energy]
+
+run:
+  end_time: 0.5
+  dt_factor: 0.1

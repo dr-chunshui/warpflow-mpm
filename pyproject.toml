@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "warpflow-mpm"
+version = "0.1.0"
+description = "GPU-accelerated Material Point Method solver: NVIDIA Warp kernels within MPI domain decomposition (port of Karamelo)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0" }
+dependencies = [
+    "warp-lang>=1.19",
+    "mpi4py",
+    "numpy",
+    "pyyaml",
+]
+
+[project.scripts]
+warpflow = "warpflow_mpm.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

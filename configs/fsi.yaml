@@ -1,0 +1,61 @@
+# FSI: water dam break past an elastic obstacle
+# (port of Karamelo examples/FSI/input.mpm, truncated to t=0.005 for CI)
+# Units: Pa, m, s
+
+dimension: 2
+box: [[-0.2, 0.0], [0.0, 0.14]]
+cellsize: 0.001
+basis: linear
+precision: float64
+
+method:
+  type: ulmpm
+  transfer: flip
+  pic_flip: 1.0
+  scheme: musl
+
+materials:
+  - id: mat1
+    model: eos-strength
+    eos: {type: fluid, rho0: 998.0, K: 1.4e+6, gamma: 7.0}
+    strength: {type: fluid, G: 0.001}
+  - id: mat2
+    model: linear-elastic
+    rho: 1100.0
+    E: 1.2e+7
+    nu: 0.4
+
+regions:
+  # water column: x [-0.1, 0], y [0, 0.14]
+  - {id: water, type: box, center: [-0.05, 0.07], size: [0.05, 0.07]}
+  # elastic obstacle: x [-0.107, -0.102], y [0.0005, 0.079]
+  - {id: obstacle, type: box, center: [-0.1045, 0.03975], size: [0.0025, 0.03925]}
+  # bottom: y <= cellsize/4 (node layer y=0)
+  - {id: rBottom, type: box, center: [-0.1, -999999.99975], size: [10.0, 1000000.00025]}
+  # wall: x <= cellsize/4 (node column x=0)
+  - {id: rWall, type: box, center: [-999999.99975, 0.07], size: [1000000.00025, 10.0]}
+  # gate: x [-0.10025, -0.09995], y >= 0.14
+  - {id: rGate, type: box, center: [-0.1001, 1000000.14], size: [0.00015, 1000000.0]}
+  # obstacle top clamp: x [-0.11, -0.102], y [0.13975, 0.14025]
+  - {id: rTopS, type: box, center: [-0.106, 0.14], size: [0.004, 0.00025]}
+
+solids:
+  - {id: solidW, material: mat1, region: water, ppc: 2}
+  - {id: solidS, material: mat2, region: obstacle, ppc: 2}
+
+boundary_conditions:
+  - {id: fBCLYW, type: velocity_nodes, region: rBottom, vy: 0}
+  - {id: fBCRX, type: velocity_nodes, region: rWall, vx: 0}
+  - {id: fBCLX, type: velocity_nodes, region: rGate, vx: 0}
+  - {id: fBCXY, type: velocity_nodes, region: rTopS, vx: 0, vy: 0}
+  - {id: fbody, type: body_force, g: [0, -9.81]}
+
+output:
+  interval: 100
+  particle_dump: dump_p.*.LAMMPS
+  fields: [x, y, vx, vy]
+  log: [kinetic_energy]
+
+run:
+  end_time: 0.005
+  dt: 1.0e-6

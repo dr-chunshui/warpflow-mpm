@@ -1,0 +1,15 @@
+dimension: 3
+box: [[-1, -1, -1], [1, 1, 1]]
+cellsize: 0.25
+basis: linear
+method: {type: ulmpm, transfer: flip, pic_flip: 0.99, scheme: musl}
+materials:
+  - {id: mat1, model: linear-elastic, rho: 1000, E: 1.0e5, nu: 0.3}
+regions:
+  - {id: rBall, type: sphere, center: [-0.5, 0, 0], radius: 0.6}
+solids:
+  - {id: sBall, material: mat1, region: rBall, ppc: 2}
+initial_conditions:
+  - {id: v0, type: initial_velocity, select: rBall, v: [0.05, 0, 0]}
+output: {interval: 100}
+run: {end_time: 2.0, dt_factor: 1.0}

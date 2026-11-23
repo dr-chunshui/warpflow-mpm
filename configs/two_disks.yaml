@@ -1,0 +1,62 @@
+# Two elastic disks colliding diagonally (port of Karamelo examples/two-disks.mpm)
+# Units: MPa, mm, s
+
+dimension: 2
+box: [[-0.5, -0.5], [0.5, 0.5]]
+cellsize: 0.05
+basis: linear
+precision: float64
+
+method:
+  type: ulmpm
+  transfer: flip
+  pic_flip: 1.0
+  scheme: musl
+
+materials:
+  - id: mat1
+    model: linear-elastic
+    rho: 1000.0
+    E: 1.0e3
+    nu: 0.3
+
+regions:
+  - id: rBall1
+    type: cylinder
+    center: [-0.3, -0.3]
+    radius: 0.2
+  - id: rBall2
+    type: cylinder
+    center: [0.3, 0.3]
+    radius: 0.2
+
+solids:
+  - id: sBall1
+    material: mat1
+    region: rBall1
+    ppc: 2
+  - id: sBall2
+    material: mat1
+    region: rBall2
+    ppc: 2
+
+initial_conditions:
+  - id: v0Ball1
+    type: initial_velocity
+    select: rBall1
+    v: [0.1, 0.1]
+  - id: v0Ball2
+    type: initial_velocity
+    select: rBall2
+    v: [-0.1, -0.1]
+
+output:
+  interval: 10
+  particle_dump: dump_p.*.LAMMPS
+  fields: [x, y, z]
+  log: [kinetic_energy, strain_energy]
+
+run:
+  end_time: 3.5
+  dt: 0.01            # constant dt (C++ set_dt(0.01))
+  dt_factor: 1.0

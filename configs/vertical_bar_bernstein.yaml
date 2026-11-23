@@ -1,0 +1,44 @@
+# Elastic bar under gravity, Bernstein-quadratic basis (port of Karamelo
+# examples/Vertical_bar/Bernstein/vertical_bar.mpm) - TLMPM + neo-hookean
+# Units: Pa, m, s
+
+dimension: 3
+box: [[-0.5, -2.0, -0.5], [0.5, 0.0, 0.5]]
+cellsize: 0.1
+basis: bernstein
+precision: float64
+
+method:
+  type: tlmpm
+  transfer: flip
+  pic_flip: 0.99
+  scheme: musl
+
+materials:
+  - id: mat1
+    model: neo-hookean
+    rho: 1050.0
+    E: 1.0e6
+    nu: 0.3
+
+regions:
+  - {id: bar, type: box, center: [0.0, -0.5, 0.0], size: [0.5, 0.5, 0.5]}
+  - {id: rTop, type: box, center: [0.0, 999999.975, 0.0],
+     size: [10.0, 1000000.025, 10.0]}
+
+solids:
+  - {id: solid1, material: mat1, region: bar, ppc: 2}
+
+boundary_conditions:
+  - {id: fBCLX, type: velocity_nodes, region: rTop, vx: 0, vy: 0, vz: 0}
+  - {id: fbody, type: body_force, g: [0, -1000.0, 0]}
+
+output:
+  interval: 20
+  particle_dump: dump_p.*.LAMMPS
+  fields: [x, y, z]
+  log: [kinetic_energy]
+
+run:
+  end_time: 0.26
+  dt_factor: 0.2
