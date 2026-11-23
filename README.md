@@ -218,3 +218,15 @@ edges.
 Same as Karamelo: SI by convention (whatever units you put in), box-aligned
 grid with nodes at `boxlo + k*h`, global node tag `nz*ny*i + nz*j + k`,
 LAMMPS-style dumps.
+
+## License
+
+Licensed under the **GNU General Public License v2.0** (see
+[LICENSE](LICENSE)).
+
+warpflow-mpm is a derivative work of
+[Karamelo](https://github.com/karameloms/karamelo) (C++/Eigen/MPI MPM
+solver, GPL-2.0, Copyright the Karamelo authors): its methods, algorithms
+and conventions are ported and restructured for NVIDIA Warp + Python.
+This distribution is therefore also licensed under GPL-2.0, and it comes
+WITHOUT ANY WARRANTY; see LICENSE for details.
